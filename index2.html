@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المتابعة الغذائية الأسبوعية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F6F1E4;
+    --cream-2:#EFE7D2;
+    --ink:#25231D;
+    --olive:#3E4A2C;
+    --olive-2:#59683C;
+    --terracotta:#B5602E;
+    --terracotta-2:#8F4A22;
+    --sage:#9AA57C;
+    --line:#D9CEB2;
+    --card:#FFFDF7;
+    --danger:#A6472E;
+    --shadow: 0 8px 24px rgba(37,35,29,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.65;
+    min-height:100vh;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:28px 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header{
+    text-align:center;
+    padding:18px 0 30px;
+    position:relative;
+  }
+  header .eyebrow{
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    letter-spacing:.5px;
+    color:var(--terracotta-2);
+    font-size:14px;
+    text-transform:none;
+    margin-bottom:6px;
+  }
+  header h1{
+    font-family:'Cairo',sans-serif;
+    font-weight:900;
+    font-size:clamp(28px,5vw,42px);
+    margin:0 0 8px;
+    color:var(--olive);
+  }
+  header p.sub{
+    color:#5c5847;
+    font-size:15px;
+    margin:0;
+  }
+
+  /* ---------- Ketosis journey (signature element) ---------- */
+  .journey{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px 20px 18px;
+    margin-bottom:28px;
+    box-shadow:var(--shadow);
+  }
+  .journey h2{
+    font-family:'Cairo',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    color:var(--olive);
+    margin:0 0 16px;
+  }
+  .journey-track{
+    display:flex;
+    align-items:stretch;
+    gap:6px;
+  }
+  .journey-stage{
+    flex:1;
+    position:relative;
+    padding:14px 10px 10px;
+    border-radius:12px;
+    background:var(--cream-2);
+    border:1px solid var(--line);
+    transition:.25s;
+    cursor:default;
+  }
+  .journey-stage.active{
+    background:linear-gradient(160deg, var(--olive), var(--olive-2));
+    border-color:var(--olive);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(62,74,44,0.35);
+  }
+  .journey-stage .stage-label{
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:12.5px;
+    display:block;
+    margin-bottom:6px;
+  }
+  .journey-stage .stage-days{
+    font-size:11px;
+    opacity:.75;
+  }
+  .journey-note{
+    margin-top:14px;
+    font-size:13px;
+    color:#5c5847;
+  }
+  .journey-note b{color:var(--terracotta-2);}
+
+  /* ---------- Day selector ---------- */
+  .days-strip{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:8px;
+    margin-bottom:22px;
+  }
+  .day-chip{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 4px;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+    position:relative;
+  }
+  .day-chip .num{
+    font-family:'Cairo',sans-serif;
+    font-weight:800;
+    font-size:18px;
+    display:block;
+    color:var(--olive);
+  }
+  .day-chip .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--line);
+    margin:6px auto 0;
+  }
+  .day-chip.done .dot{background:var(--terracotta);}
+  .day-chip.selected{
+    border-color:var(--olive);
+    background:var(--cream-2);
+    transform:translateY(-2px);
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Day type toggle ---------- */
+  .type-toggle{
+    display:flex;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .type-toggle button{
+    flex:1;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    padding:11px 8px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--ink);
+    cursor:pointer;
+    transition:.2s;
+  }
+  .type-toggle button.active{
+    background:var(--terracotta);
+    border-color:var(--terracotta);
+    color:#fff;
+  }
+
+  /* ---------- Meal cards ---------- */
+  .meal{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 18px 16px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow);
+  }
+  .meal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .meal-head .title{
+    font-family:'Cairo',sans-serif;
+    font-weight:800;
+    font-size:16px;
+    color:var(--olive);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .meal-head .time{
+    font-size:12.5px;
+    color:var(--terracotta-2);
+    font-weight:700;
+  }
+  .meal-body p{margin:0 0 8px;font-size:14.5px;}
+  .meal-body .or-line{
+    display:block;
+    padding:4px 0;
+    border-top:1px dashed var(--line);
+    margin-top:6px;
+    padding-top:8px;
+  }
+  .meal-body .or-line:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+  .check{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    cursor:pointer;
+    user-select:none;
+    font-family:'Cairo',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    color:var(--olive-2);
+  }
+  .check input{width:17px;height:17px;accent-color:var(--terracotta);cursor:pointer;}
+
+  /* ---------- Lunch options ---------- */
+  .lunch-options{display:flex;flex-direction:column;gap:8px;}
+  .lunch-opt{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:var(--cream-2);
+    cursor:pointer;
+    font-size:14px;
+    transition:.15s;
+  }
+  .lunch-opt.selected{
+    background:#EDE1CB;
+    border-color:var(--terracotta);
+  }
+  .lunch-opt input{margin-top:3px;accent-color:var(--terracotta);}
+
+  /* ---------- Reminders ---------- */
+  .reminders{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin:22px 0;
+  }
+  .reminder-card{
+    background:var(--olive);
+    color:#fff;
+    border-radius:14px;
+    padding:14px 14px;
+  }
+  .reminder-card h3{
+    font-family:'Cairo',sans-serif;
+    font-size:13px;
+    margin:0 0 6px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .reminder-card p{margin:0;font-size:12.5px;opacity:.9;}
+  .reminder-card label{
+    display:flex;gap:8px;align-items:center;
+    margin-top:8px;font-size:12.5px;font-weight:700;
+    font-family:'Cairo',sans-serif;
+    cursor:pointer;
+  }
+  .reminder-card input{accent-color:var(--terracotta);}
+
+  /* ---------- Warning ---------- */
+  .warning{
+    background:#F7E9E1;
+    border:1px solid #E0B7A2;
+    color:var(--danger);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13.5px;
+    font-weight:700;
+    text-align:center;
+    margin:20px 0;
+    font-family:'Cairo',sans-serif;
+  }
+
+  /* ---------- Accordion (what to expect / keto solution) ---------- */
+  .accordion{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--card);
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .accordion summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 16px;
+    font-family:'Cairo',sans-serif;
+    font-weight:700;
+    font-size:14.5px;
+    color:var(--olive);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .accordion summary::-webkit-details-marker{display:none;}
+  .accordion summary:after{
+    content:'+';
+    font-size:20px;
+    color:var(--terracotta);
+    transition:.2s;
+  }
+  .accordion[open] summary:after{transform:rotate(45deg);}
+  .accordion .acc-body{padding:0 16px 16px;font-size:14px;color:#3f3c31;}
+  .acc-body ul{margin:6px 0;padding-right:20px;}
+  .acc-body li{margin-bottom:4px;}
+  .acc-body .stage-title{font-weight:700;color:var(--terracotta-2);margin-top:10px;font-family:'Cairo',sans-serif;}
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:#8a8570;
+    margin-top:30px;
+  }
+
+  @media (max-width:560px){
+    .days-strip{grid-template-columns:repeat(7,1fr);gap:5px;}
+    .day-chip{padding:8px 2px;}
+    .day-chip .num{font-size:15px;}
+    .reminders{grid-template-columns:1fr;}
+    .journey-stage .stage-days{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">برنامج الأسبوع الأول</div>
+    <h1>المتابعة الغذائية اليومية</h1>
+    <p class="sub">حسب خطة الأخصائي — تابع أيامك، اختياراتك، والتزامك بالمكملات</p>
+  </header>
+
+  <div class="journey">
+    <h2>مسار الكيتوزيس المتوقع</h2>
+    <div class="journey-track" id="journeyTrack">
+      <div class="journey-stage" data-stage="1">
+        <span class="stage-label">الأسبوع الأول</span>
+        <span class="stage-days">إرهاق، كثرة تبويل، اشتهاء نشويات</span>
+      </div>
+      <div class="journey-stage" data-stage="2">
+        <span class="stage-label">الأسبوع الثاني</span>
+        <span class="stage-days">نشاط، تحسن الإخراج، تغيّر شكل البطن</span>
+      </div>
+      <div class="journey-stage" data-stage="3">
+        <span class="stage-label">بعد أسبوعين</span>
+        <span class="stage-days">شبع دائم، نزول الوزن</span>
+      </div>
+    </div>
+    <p class="journey-note">اليوم المحدد أدناه سيُبرز موقعك على هذا المسار تلقائياً.</p>
+  </div>
+
+  <div class="days-strip" id="daysStrip"></div>
+
+  <div class="type-toggle" id="typeToggle">
+    <button data-type="workout">أيام تمارين الأوزان</button>
+    <button data-type="normal">باقي الأيام</button>
+  </div>
+
+  <div id="mealsContainer"></div>
+
+  <div class="reminders">
+    <div class="reminder-card">
+      <h3>🧂 المحلول الكيتوني</h3>
+      <p>كوب ماء + ملعقة كبيرة خل تفاح طبيعي + رشة ملح هملايا + ملعقة صغيرة عصير ليمون + أوراق نعنع أخضر — يُشرب بالمصاصة، وينصح بغسل الأسنان بعده.</p>
+      <label><input type="checkbox" id="chkKeto"> شربته اليوم</label>
+    </div>
+    <div class="reminder-card" style="background:var(--terracotta-2);">
+      <h3>💊 المكملات</h3>
+      <p>مغنيسيوم (bio) حبة قبل النوم — وفيتامين د حبة يومياً بعد الفطور.</p>
+      <label><input type="checkbox" id="chkMg"> المغنيسيوم قبل النوم</label>
+      <label><input type="checkbox" id="chkD"> فيتامين د بعد الفطور</label>
+    </div>
+  </div>
+
+  <div class="warning">
+    ⚠️ تناول النشويات أو السكر أو الفواكه سيخرج الجسم من حالة الكيتوسيس
+  </div>
+
+  <details class="accordion">
+    <summary>خيارات الغداء الكاملة</summary>
+    <div class="acc-body" id="lunchOptionsBody"></div>
+  </details>
+
+  <details class="accordion">
+    <summary>ماذا تتوقع خلال الحمية</summary>
+    <div class="acc-body">
+      <div class="stage-title">الأسبوع الأول</div>
+      <ul>
+        <li>شعور بالإرهاق والتعب الخفيف وممكن أعراض شبيهة بالانفلونزا</li>
+        <li>كثرة التبويل</li>
+        <li>تغيّر رائحة الفم</li>
+        <li>اشتهاء الطعام خاصة النشويات</li>
+        <li>الأرق</li>
+        <li>ظهور طفح جلدي خفيف</li>
+      </ul>
+      <div class="stage-title">الأسبوع الثاني</div>
+      <ul>
+        <li>نشاط وشعور بالخفة</li>
+        <li>تحسن ملحوظ في عادة الإخراج</li>
+        <li>تغيّر في شكل منطقة البطن</li>
+      </ul>
+      <div class="stage-title">بعد أسبوعين</div>
+      <ul>
+        <li>الشعور الدائم بالشبع</li>
+        <li>تغيّر سريع في القياسات وشكل الجسم</li>
+        <li>نزول الوزن</li>
+      </ul>
+      <p style="margin-top:12px;">تُخطط حمية الكيتو من قبل الأخصائيين فقط وبعد الاطلاع على الحالة الصحية للمراجع/ة للتأكد من ملائمتها. يجب اطلاع الأخصائي/ة على التاريخ المرضي كاملاً ومتابعة أي أعراض صحية جديدة تظهر أثناء اتباع الحمية معه.</p>
+    </div>
+  </details>
+
+  <footer>تتبع أسبوعي شخصي · البيانات محفوظة على هذا الجهاز فقط</footer>
+</div>
+
+<script>
+const LUNCH_OPTIONS = [
+  "400 غم دجاج / فخذ مسحب او ستيك مقلي بملعقتين كبيرتين زيت + كوب خضار مشويه مع اضافه ملعقتين كبيره زيت زيتون (قبضه يد بروكلي / 5 حبات فطر) و 10 حبات زيتون",
+  "400 غم كباب مشوي مع ملعقتين كبيرتين زيت و 10 حبات زيتون",
+  "400 غم برغر دجاج او لحمة مقلي بملعقتين كبيرتين زيت + خس + شريحتي بندوره + مخلل و 10 حبات زيتون",
+  "350 غم شاورما دجاج + ملعقتين كبيرتين مايونيز (ماز ولا)",
+  "كوبين خضار مطبوخه (فاصولياء / ملوخيه ..) + 350 غم دجاج مقلي او لحمه مطبوخه + 10 حبات زيتون",
+  "دجاج محشي خضار (350 غم صدور دجاج تفتح مثل الجيب و تحشى بخليط سبانخ و بصل و فطر و ملعقتين كبيرتين جبنه موزوريلا) ثم تدهن بالزيت و تشوى بالفرن",
+  "دجاج مسخن: صدر + فخذ دجاج مشوي بالفرن مع نصف كوب زيت زيتون و بهارات و سماق و ملح مع حبة بصل وسط و شرائح لوز",
+  "3 حبات مخشي مع كوبين لبن جميد",
+  "350 غم كبده مشوحه بزيت زيتون مع نصف بصله صغيره و حبه فلفل حر صغير مع 10 حبات زيتون اخضر",
+  "حبتين طحل محشيه (بقدونس / ملح / ليمون / ثوم / 10 حبات جوز مفروم) مع زيت زيتون مع 10 حبات زيتون اخضر",
+  "400 غم shrimps مقليه بملعقه كبيره زبده و ملعقه كبيره زيت زيتون + كوب بقدونسيه (مع ملعقتين كبيرتين طحينيه) مع 10 حبات زيتون اخضر",
+  "400 غم شيش طاووق مع ملعقه كبيره مايونيز مازولا مع 10 حبات زيتون اخضر"
+];
+
+const DAY_NAMES = ["1","2","3","4","5","6","7"];
+const STORAGE_KEY = "keto-week-tracker-v1";
+
+let state = {
+  currentDay: 1,
+  days: {}
+};
+
+function defaultDay(){
+  return {
+    type: "workout",
+    meals: { preworkout:false, breakfast:false, snack:false, lunch:false, dinner:false },
+    lunchChoice: null,
+    keto:false, mg:false, vitd:false
+  };
+}
+
+function getDay(n){
+  if(!state.days[n]) state.days[n] = defaultDay();
+  return state.days[n];
+}
+
+let memoryFallback = null;
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    memoryFallback = JSON.stringify(state);
+  }
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY) || memoryFallback;
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(parsed && parsed.days) state = parsed;
+    }
+  }catch(e){ /* no saved data yet, start fresh */ }
+}
+
+function renderDaysStrip(){
+  const strip = document.getElementById('daysStrip');
+  strip.innerHTML = '';
+  DAY_NAMES.forEach((label, idx) => {
+    const n = idx+1;
+    const d = getDay(n);
+    const isDone = Object.values(d.meals).some(v=>v) || d.keto || d.mg || d.vitd;
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (n===state.currentDay ? ' selected':'') + (isDone ? ' done':'');
+    chip.innerHTML = `<span class="num">${label}</span><span class="dot"></span>`;
+    chip.onclick = () => { state.currentDay = n; render(); saveState(); };
+    strip.appendChild(chip);
+  });
+}
+
+function renderJourney(){
+  document.querySelectorAll('.journey-stage').forEach(el => el.classList.remove('active'));
+  const n = state.currentDay;
+  let stage = 1;
+  if(n>=3 && n<=6) stage = 2;
+  if(n>=7) stage = 3;
+  const el = document.querySelector(`.journey-stage[data-stage="${stage}"]`);
+  if(el) el.classList.add('active');
+}
+
+function renderTypeToggle(){
+  const d = getDay(state.currentDay);
+  document.querySelectorAll('#typeToggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === d.type);
+  });
+}
+
+function mealCard({key, title, time, bodyHtml}){
+  const d = getDay(state.currentDay);
+  const checked = d.meals[key] ? 'checked' : '';
+  return `
+  <div class="meal">
+    <div class="meal-head">
+      <span class="title">${title}</span>
+      <span class="time">${time}</span>
+    </div>
+    <div class="meal-body">${bodyHtml}</div>
+    <label class="check">
+      <input type="checkbox" data-meal="${key}" ${checked}>
+      تم تناولها
+    </label>
+  </div>`;
+}
+
+function renderMeals(){
+  const d = getDay(state.currentDay);
+  const container = document.getElementById('mealsContainer');
+  let html = '';
+
+  if(d.type === 'workout'){
+    html += mealCard({
+      key:'preworkout', title:'قبل التمرين', time:'',
+      bodyHtml:'<p>10 حبات لوز محمص</p>'
+    });
+    html += mealCard({
+      key:'breakfast', title:'الفطور', time:'بعد التمرين',
+      bodyHtml:`<p>3 ملاعق كبيره حمص + حبتين لبنه جرشيةً +</p>
+                <p>كوبي سلطه خضروات كمية مفتوحه مع ملعقة كبيرة زيت زيتون + 2 بيض مقلي بملعقه صغيره زبده او زيت الزيتون</p>`
+    });
+    html += mealCard({
+      key:'snack', title:'سناك', time:'1-2 ظهرا',
+      bodyHtml:`<p>3 حبات جوز برازيلي</p><p>بين الوجبات: كوب محلول كيتوني</p>`
+    });
+    html += mealCard({
+      key:'lunch', title:'الغداء', time:'4-5 مساء',
+      bodyHtml:`<p>كوبي سلطه عربيه مع ملح وعصره ليمون مع ملعقتين كبيرتين زيت زيتون وملعقه كبيره خل تفاح + اختيار من قائمة الغداء</p>`
+    });
+    html += mealCard({
+      key:'dinner', title:'العشاء', time:'9 مساء',
+      bodyHtml:`
+        <span class="or-line">كوب متبل مع ملعقه كبيره طحينيه مع حبتين خيار</span>
+        <span class="or-line">او كوبين سلطه يونانيه مع 10 شرحات زيتون مع 60 غم فيتا</span>
+        <span class="or-line">او 5 حبات فراوله مع 15 حبه بلوبيري</span>
+        <span class="or-line">او strawberry shake: كوب حليب اللوز مع 5 حبات فراوله مع ستيفيا او مونك فروت.</span>`
+    });
+  } else {
+    html += mealCard({
+      key:'breakfast', title:'الفطور', time:'',
+      bodyHtml:`
+        <p>كوبي سلطه خضروات كمية مفتوحه مع ملعقة كبيرة زيت زيتون + 2 بيض مقلي بملعقه صغيره زبده او زيت الزيتون + اختيار مما يلي</p>
+        <span class="or-line">60 غم جبنه بيضاء او فيتا</span>
+        <span class="or-line">او حبة مقدوس وسط</span>
+        <span class="or-line">او كوب قلايه بندورة بزيت الزيتون</span>
+        <span class="or-line">او كوب مفركة كوسا بزبت الزيتون</span>
+        <span class="or-line">او 3 حبات نقانق بلدي</span>
+        <span class="or-line">او شريحتي جبنه شيدر</span>
+        <span class="or-line">او حبتين لبنه جرشيه</span>`
+    });
+    html += mealCard({
+      key:'snack', title:'سناك', time:'',
+      bodyHtml:`<p>3 حبات جوز برازيلي</p><p>بين الوجبات: كوب محلول كيتوني</p>`
+    });
+    html += mealCard({
+      key:'lunch', title:'الغداء', time:'4-5 مساء',
+      bodyHtml:`<p>كوبي سلطه عربيه مع ملح وعصره ليمون مع ملعقتين كبيرتين زيت زيتون وملعقه كبيره خل تفاح + اختيار من قائمة الغداء</p>`
+    });
+    html += mealCard({
+      key:'dinner', title:'العشاء', time:'8 مساء',
+      bodyHtml:`
+        <span class="or-line">30 حبه لوز محمص</span>
+        <span class="or-line">او كوب متبل مع ملعقه كبيره طحينيه مع حبتين خيار</span>
+        <span class="or-line">او كوبين سلطه يونانيه مع 10 شرحات زيتون مع 60 غم فيتا.</span>`
+    });
+  }
+
+  container.innerHTML = html;
+
+  container.querySelectorAll('input[data-meal]').forEach(inp => {
+    inp.addEventListener('change', () => {
+      const d = getDay(state.currentDay);
+      d.meals[inp.dataset.meal] = inp.checked;
+      saveState();
+      renderDaysStrip();
+    });
+  });
+}
+
+function renderLunchOptions(){
+  const body = document.getElementById('lunchOptionsBody');
+  const d = getDay(state.currentDay);
+  let html = '<div class="lunch-options">';
+  LUNCH_OPTIONS.forEach((opt, i) => {
+    const selected = d.lunchChoice === i;
+    html += `<label class="lunch-opt ${selected ? 'selected':''}" data-idx="${i}">
+      <input type="radio" name="lunchOpt" ${selected?'checked':''}>
+      <span>${opt}</span>
+    </label>`;
+  });
+  html += '</div>';
+  body.innerHTML = html;
+
+  body.querySelectorAll('.lunch-opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const d = getDay(state.currentDay);
+      d.lunchChoice = parseInt(el.dataset.idx);
+      saveState();
+      renderLunchOptions();
+    });
+  });
+}
+
+function renderReminders(){
+  const d = getDay(state.currentDay);
+  document.getElementById('chkKeto').checked = d.keto;
+  document.getElementById('chkMg').checked = d.mg;
+  document.getElementById('chkD').checked = d.vitd;
+}
+
+function render(){
+  renderDaysStrip();
+  renderJourney();
+  renderTypeToggle();
+  renderMeals();
+  renderLunchOptions();
+  renderReminders();
+}
+
+document.querySelectorAll('#typeToggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const d = getDay(state.currentDay);
+    d.type = btn.dataset.type;
+    saveState();
+    render();
+  });
+});
+
+['chkKeto','chkMg','chkD'].forEach(id => {
+  document.getElementById(id).addEventListener('change', (e) => {
+    const d = getDay(state.currentDay);
+    if(id==='chkKeto') d.keto = e.target.checked;
+    if(id==='chkMg') d.mg = e.target.checked;
+    if(id==='chkD') d.vitd = e.target.checked;
+    saveState();
+    renderDaysStrip();
+  });
+});
+
+(function init(){
+  loadState();
+  render();
+})();
+</script>
+</body>
+</html>
